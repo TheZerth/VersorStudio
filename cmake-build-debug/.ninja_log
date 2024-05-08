@@ -1,0 +1,8 @@
+# ninja log v5
+1	246	1715144607077771710	VersorStudio/CMakeFiles/VersorStudio.dir/main.cpp.o	2134a4ff499e6c14
+1	552	1715144610457854030	build.ninja	e9fcec165268753a
+1	190	1715143104772238718	VersorStudio/CMakeFiles/VersorStudio.dir/Versor.cpp.o	95c423f2cd8bce91
+246	326	1715144607157773663	VersorStudio/VersorStudio	83629dbd75ac4230
+1	54	1715135110416409807	VersorStudio/CMakeFiles/VersorStudio.dir/UseImGui.cpp.o	fb0465f98086f1e9
+1	219	1715144673131319333	VersorStudio/CMakeFiles/VersorStudio.dir/main.cpp.o	2134a4ff499e6c14
+219	317	1715144673227321491	VersorStudio/VersorStudio	83629dbd75ac4230

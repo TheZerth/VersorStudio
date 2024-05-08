@@ -1,0 +1,5 @@
+/home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug/VersorStudio/CMakeFiles/VersorStudio.dir
+/home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug/VersorStudio/CMakeFiles/edit_cache.dir
+/home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug/VersorStudio/CMakeFiles/rebuild_cache.dir

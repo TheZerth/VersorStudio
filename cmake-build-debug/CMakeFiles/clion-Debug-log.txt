@@ -1,0 +1,33 @@
+/home/zerth/Documents/Development/Tools/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/zerth/Documents/Development/Tools/clion/bin/ninja/linux/x64/ninja -DCMAKE_TOOLCHAIN_FILE=/home/zerth/Documents/Development/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake -G Ninja -S /home/zerth/Documents/Development/Projects/VersorStudio -B /home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug
+-- Running vcpkg install
+Detecting compiler hash for triplet x64-linux...
+Compiler found: /usr/bin/c++
+All requested packages are currently installed.
+Total install time: 210 ns
+glad provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(glad CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE glad::glad)
+
+glfw3 provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(glfw3 CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE glfw)
+
+glfw3 provides pkg-config modules:
+
+  # A multi-platform library for OpenGL, window and input
+  glfw3
+
+imgui provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(imgui CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE imgui::imgui)
+
+-- Running vcpkg install - done
+-- Configuring done (1.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug
