@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("imGUIexample")
+project ("VersorStudio")
 
 # Include sub-projects.
-add_subdirectory ("imGUIexample")
+add_subdirectory ("VersorStudio")
