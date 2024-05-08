@@ -1,3 +1,0 @@
-[submodule "ThirdParty/imgui_bundle"]
-	path = ThirdParty/imgui_bundle
-	url = https://github.com/pthom/imgui_bundle.git
