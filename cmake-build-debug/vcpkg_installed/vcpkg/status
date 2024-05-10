@@ -81,3 +81,12 @@ Multi-Arch: same
 Description: Make available OpenGL3/ES/ES2 (modern) binding
 Status: install ok installed
 
+Package: implot
+Version: 0.16
+Depends: imgui, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: d2099e5b83586df808b3d444b6d4703b0e98bd306431d472e56210aec645049b
+Description: Advanced 2D Plotting for Dear ImGui
+Status: install ok installed
+

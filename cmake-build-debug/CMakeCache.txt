@@ -538,6 +538,9 @@ imgui_bundle_IS_TOP_LEVEL:STATIC=OFF
 //Value Computed by CMake
 imgui_bundle_SOURCE_DIR:STATIC=/home/zerth/Documents/Development/Projects/VersorStudio/ThirdParty/imgui_bundle
 
+//The directory containing a CMake configuration file for implot.
+implot_DIR:PATH=/home/zerth/Documents/Development/Projects/VersorStudio/cmake-build-debug/vcpkg_installed/x64-linux/share/implot
+
 
 ########################
 # INTERNAL cache entries

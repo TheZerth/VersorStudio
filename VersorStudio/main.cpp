@@ -1,16 +1,21 @@
 ﻿// VersorStudio.cpp : Defines the entry point for the application.
 //
 
-#include "UseImGui.h"
+#include "VersorAgent.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Gibbs.h"
 #include "Versor.h"
 #include <vector>
+#include <implot.h>
+#include <math.h>
+#include <iomanip>
 
-class CustomImGui : public UseImGui {
+
+class CustomImGui : public VersorAgent {
 public:
-    float inputVector[3] = {0,0,0};
-    Versor tempVersor{0,0,0};
+    float inputVector[4] = {0,0,0,0};
+    Versor tempVersor{0, 0, 0, 0};
     float inputVoltage = 0;
     float inputCurrent = 0;
     float inputResistance = 0;
@@ -18,10 +23,50 @@ public:
     float* _inputVoltage = &inputVoltage;
     float* _inputResistance = &inputResistance;
     std::vector<Versor> worldVersors;
+    bool _addVersor = false;
+    static char* worldVersorNames[100];
+
 	virtual void Update() override {
 
 		// Begin GUI
         int counter = 0;
+        ImGui::Begin("Versor Studio", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+        ImGui::InputFloat3("Vector", inputVector, "%.3f", 0);
+        if (ImGui::Button("Add"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+        {
+            tempVersor.a = inputVector[0];
+            tempVersor.x = inputVector[1];
+            tempVersor.y = inputVector[2];
+            tempVersor.b = inputVector[3];
+            worldVersors.push_back(tempVersor);
+        }
+        if (ImPlot::BeginPlot("Plot")) {
+
+            ImVec2 origin = ImPlot::PlotToPixels(ImPlotPoint(0,  0));
+            //ImVec2 e1 = ImPlot::PlotToPixels(ImPlotPoint(1, 0));
+            //ImVec2 e2 = ImPlot::PlotToPixels(ImPlotPoint(0, 1));
+            ImPlot::PushPlotClipRect();
+            //ImPlot::GetPlotDrawList()->AddCircleFilled(cntr,20,IM_COL32(255,255,0,255),20);
+            //ImPlot::GetPlotDrawList()->AddRect(rmin, rmax, IM_COL32(128,0,255,255));
+            //ImPlot::GetPlotDrawList()->AddLine(origin,e1,IM_COL32(255,0,0,255),2);
+
+            for (int i = 0; i < worldVersors.size(); i++) {     //Iterate through all the versors in the world and draw them every frame.
+                ImPlot::GetPlotDrawList()->AddLine(origin,
+                                                   ImPlot::PlotToPixels(ImPlotPoint(worldVersors[i].x, worldVersors[i].y)),
+                                                   IM_COL32(255, 0, 0, 255), 2);
+            }
+            ImPlot::PopPlotClipRect();
+            ImPlot::EndPlot();
+
+            ImGui::SeparatorText("World Versors");
+            static int selected = 0;
+            ImGui::ListBox("Versors", &selected, 2, 10);
+            //for (int i = 0; i < worldVersors.size(); i++) {
+                //ImGui::Checkbox(" ", &worldVersorSelected[i]);
+                //ImGui::Text("Versor %d: %f + %f e1 + %f e2 + %f e1^e2", i, worldVersors[i].a, worldVersors[i].x, worldVersors[i].y, worldVersors[i].b);
+            //}
+        }ImGui::End();
+
 
         // Ohm's Law Screen
         if (ImGui::Begin("Ohm's Law", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse))
@@ -56,15 +101,7 @@ public:
         // Versor Screen
         if (ImGui::Begin("Versor Studio", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse))
         {
-            ImGui::InputFloat3("Vector", inputVector, "%.3f", 0);
-            if (ImGui::Button("Add"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            {
-                tempVersor.x(inputVector[0]);
-                tempVersor.y(inputVector[1]);
-                tempVersor.z(inputVector[2]);
-                worldVersors.push_back(tempVersor);
-                std::cout << "Added Versor: [" << tempVersor.x() << "e1, " << tempVersor.y() << "e2, " << tempVersor.z() << "e3]" << std::endl;
-            }
+
         }ImGui::End();
 
         // Info Screen
@@ -100,9 +137,9 @@ int main()
 	// GL 3.0 + GLSL 130
 	const char *glsl_version = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 
 	// Create window with graphics context
 	GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui - Example", NULL, NULL);
@@ -118,6 +155,47 @@ int main()
 	glfwGetFramebufferSize(window, &screen_width, &screen_height);
 	glViewport(0, 0, screen_width, screen_height);
 
+    // Test Geometric Algebra
+    Versor testScalar1{5.0f, 0.0f, 0.0f, 0.0f};
+    Versor testScalar2{3.0f, 0.0f, 0.0f, 0.0f};
+    Versor testVector1{0.0f, 2.0f, 0.0f, 0.0f};
+    Versor testVector2{0.0f, 0.0f, 4.0f, 0.0f};
+    Versor testBivector1{0.0f, 0.0f, 0.0f, 6.0f};
+    Versor testBivector2{0.0f, 0.0f, 0.0f, 2.0f};
+
+    std::cout << "Scalar Addition: " << (testScalar1 + testScalar2) << std::endl;
+    std::cout << "Scalar Subtraction: " << (testScalar1 - testScalar2) << std::endl;
+    std::cout << "Scalar Multiplication: " << (testScalar1 * testScalar2) << std::endl;
+    std::cout << "Scalar Division: " << (testScalar1 / testScalar2) << std::endl;
+    std::cout << "Vector Addition: " << (testVector1 + testVector2) << std::endl;
+    std::cout << "Vector Subtraction: " << (testVector1 - testVector2) << std::endl;
+    std::cout << "Vector Multiplication: " << (testVector1 * testVector2) << std::endl;
+    std::cout << "Vector Division: " << (testVector1 / testVector2) << std::endl;
+    std::cout << "Bivector Addition: " << (testBivector1 + testBivector2) << std::endl;
+    std::cout << "Bivector Subtraction: " << (testBivector1 - testBivector2) << std::endl;
+    std::cout << "Bivector Multiplication: " << (testBivector1 * testBivector2) << std::endl;
+    std::cout << "Bivector Division: " << (testBivector1 / testBivector2) << std::endl;
+    std::cout << "Scalar Vector Addition: " << (testScalar1 + testVector1) << std::endl;
+    std::cout << "Scalar Vector Subtraction: " << (testScalar1 - testVector1) << std::endl;
+    std::cout << "Scalar Vector Multiplication: " << (testScalar1 * testVector1) << std::endl;
+    std::cout << "Scalar Vector Division: " << (testScalar1 / testVector1) << std::endl;
+    std::cout << "Scalar Bivector Addition: " << (testScalar1 + testBivector1) << std::endl;
+    std::cout << "Scalar Bivector Subtraction: " << (testScalar1 - testBivector1) << std::endl;
+    std::cout << "Scalar Bivector Multiplication: " << (testScalar1 * testBivector1) << std::endl;
+    std::cout << "Scalar Bivector Division: " << (testScalar1 / testBivector1) << std::endl;
+    std::cout << "Vector Bivector Addition: " << (testVector1 + testBivector1) << std::endl;
+    std::cout << "Vector Bivector Subtraction: " << (testVector1 - testBivector1) << std::endl;
+    std::cout << "Vector Bivector Multiplication: " << (testVector1 * testBivector1) << std::endl;
+    std::cout << "Vector Bivector Division: " << (testVector1 / testBivector1) << std::endl;
+
+    std::cout << "Test Wedge Product: " << (testVector1 ^ testVector2) << std::endl;
+    std::cout << "Test Wedge Product: " << (testVector2 ^ testVector1) << std::endl;
+
+    float a = 5;
+    float b = 3;
+    float c = a/b;
+    std::cout << std::setprecision(3) << c << std::endl;
+
     // Create IMGui manager and initialize GUI
 	CustomImGui myimgui;
 	myimgui.Init(window, glsl_version);
@@ -130,6 +208,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		myimgui.NewFrame();
 		myimgui.Update();
+
 		myimgui.Render();
 		glfwSwapBuffers(window);
 	}
