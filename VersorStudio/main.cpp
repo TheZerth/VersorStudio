@@ -140,47 +140,53 @@ private:
 
 int main()
 {
-	// Setup GLFW window
+	// GLFW is the service that creates and manages the window in the OS of choice.
+    // It links OpenGL into this window and allows for the display of OpenGL graphics.
+    //----------------
+    // Initialize GLFW
+    //----------------
 	if (!glfwInit())
 		return 1;
-
-	// GL 3.0 + GLSL 130
+    // Setup window for system and versions
 	const char *glsl_version = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-
-	// Create window with graphics context
+	// Create the window using the given properties
 	GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui - Example", NULL, NULL);
 	if (window == NULL)
 		return 1;
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
-
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))  // tie window context to glad's opengl funcs
 		throw("Unable to context to OpenGL");
-
 	int screen_width, screen_height;
-	glfwGetFramebufferSize(window, &screen_width, &screen_height);
+	glfwGetFramebufferSize(window, &screen_width, &screen_height);  // Set the viewport size to the window size
 	glViewport(0, 0, screen_width, screen_height);
-
+    //****************
+    //----------------
+    // Pre-Loop Tests
+    //----------------
     Versor testVersor{1.0f, 2.0f, 3.0f, 4.0f};
     Versor testVersor2{5.0f, 3.0f, 1.0f, 9.0f};
     std::cout << testVersor << std::endl << testVersor2 << std::endl;
     std::cout << "Versor Addition: " << (testVersor + testVersor2) << std::endl;
     std::cout << "Versor Subtraction: " << (testVersor - testVersor2) << std::endl;
-
     float a = 5;
     float b = 3;
     float c = a/b;
     std::cout << std::setprecision(3) << c << std::endl;
-
-    // Create IMGui manager and initialize GUI
+    //****************
+    //----------------
+    // Initialize IMGui
+    //----------------
 	CustomImGui myimgui;
 	myimgui.Init(window, glsl_version);
-
-    //--- MAIN LOOP ---
+    //****************
+    //----------------
+    // MAIN LOOP
+    //----------------
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 
@@ -192,7 +198,7 @@ int main()
 		glfwSwapBuffers(window);
 	}
 	myimgui.Shutdown();
-
+    //****************
 	return 0;
 }
 
