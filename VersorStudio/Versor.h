@@ -27,14 +27,21 @@ public:
 public:
     Versor(float a, float x, float y, float b) : a(a), x(x), y(y), b(b) {}
     ~Versor() = default;
+    Versor negate(Versor v) const;
 // Operators
 public:
-    // Addition
+    // Addition of multivectors is simply the individual sums of the compononents.
     Versor operator+(const Versor& v) const {
         return {a + v.a, x + v.x, y + v.y, b + v.b};
     }
 
-    // Subtraction
+    // Subtraction is defined as the sum of the inverse of the input versor.
+    // A - B = A + (-B), here is the litteral implementation of this.
+    // I will not use this due to the fact that it is not as efficient as it could be.
+    /*Versor operator-(const Versor& v) const {
+        Versor temp{-v.a, -v.x, -v.y, -v.b};
+        return *this + temp;
+    }*/
     Versor operator-(const Versor& v) const {
         return {a - v.a, x - v.x, y - v.y, b - v.b};
     }
@@ -75,6 +82,9 @@ public:
     }
 
     // Versor Division
+    // This is currently a bit of a hack to make the geometric object work
+    // Further work will be done on this to make it function properly.
+    // Currently, it does not represent a true geometric division.
     Versor operator/(const Versor& v) const {
         float temp = 0;                 //If the input versor is a scalar
         if (v.a != 0.0f) {
