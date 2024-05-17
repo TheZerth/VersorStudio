@@ -11,7 +11,7 @@
 // This can be seen as a replacement for vectors and can be used to perform geometric operations.
 // These geometric operations can greatly simplify things that would be difficult to do with classical vectors.
 // This object can be used as a scalar, vector and oriented area depending on the quantities of the coefficients.
-//
+// See the cpp for full details on how the operations are performed.
 // If the object is a scalar it can be used to represent things such as mass and charge.
 // If the object is a vector it can be used to represent things such as velocity and force.
 // If the object is a bivector it can be used to represent things such as angular momentum and torque.
@@ -26,17 +26,18 @@ public:
     float b; //This represents the oriented area or volume of the bivector. Will be zero for vectors and scalars.
 public:
     Versor(float a, float x, float y, float b) : a(a), x(x), y(y), b(b) {}
-
     ~Versor() = default;
-
-    Versor negate(Versor v) const;
 //--------------------OPERATORS--------------------
 public:
     //--------------------Addition--------------------
     // ADDITION of multivectors is simply the individual sums of the compononents.
     Versor operator+(const Versor &v) const {
-        return {a + v.a, x + v.x, y + v.y, b + v.b};
+        return add(v);
     }
+    Versor operator+(const float scalar) const {
+        return add(scalar);
+    }
+
     //--------------------Subtraction--------------------
     // SUBTRACTION is defined as the sum of the inverse of the input versor.
     // A - B = A + (-B), here is the litteral implementation of this.
@@ -46,63 +47,30 @@ public:
         return *this + temp;
     }*/
     Versor operator-(const Versor &v) const {
-        return {a - v.a, x - v.x, y - v.y, b - v.b};
+        return sub(v);
+    }
+    Versor operator-(const float scalar) const {
+        return sub(scalar);
     }
 
     //--------------------Multiplication--------------------
     // Scalar Multiplication
     Versor operator*(const float scalar) const {
-        return {a * scalar, x * scalar, y * scalar, b * scalar};
+        return mul(scalar);
     }
-
     // Versor Multiplication
     Versor operator*(const Versor &v) const {
-        if (v.a != 0.0f) {              //If the input versor is a scalar
-            return {v.a * a,
-                    v.a * x,
-                    v.a * y,
-                    v.a * b};
-        } else if (v.b == 0.0f) {         //If the input versor is a vector
-            return {0,
-                    x * v.x,
-                    y * v.y,
-                    0};
-        } else {                          //If the input versor is a bivector
-            //return UNDEFINED;
-        }
+        return mul(v);
     }
 
     //--------------------Division--------------------
     // Scalar Division
     Versor operator/(const float scalar) const {
-        if (scalar != 0.0f) {           //
-            return {a / scalar, x / scalar, y / scalar, b / scalar};
-        } else {
-            std::cout << "Error: Division by zero is not allowed." << std::endl;
-            return *this;
-        }
+        return div(scalar);
     }
-
     // Versor Division
-    // This is currently a bit of a hack to make the geometric object work
-    // Further work will be done on this to make it function properly.
-    // Currently, it does not represent a true geometric division.
     Versor operator/(const Versor &v) const {
-        float temp = 0;                 //If the input versor is a scalar
-        if (v.a != 0.0f) {
-            return {a / v.a,
-                    x / v.a,
-                    y / v.a,
-                    b / v.a};
-        }                               //If the input versor is a vector
-        else if (v.b == 0.0f) {
-            return {0,
-                    x / v.x,
-                    y / v.y,
-                    0};
-        } else {                          //Input is a bivector
-            return {b / v.b, 0, 0, 0};
-        }
+        return div(v);
     }
 
     //--------------------Exterior Product--------------------
@@ -121,7 +89,10 @@ public:
     // The rest is a scalar quantity.
     // If the wedge product is zero, then the two vectors are parallel.
     Versor operator^(const Versor &v) const {
-        return {0, 0, 0, x * v.y - y * v.x};
+        return ext(v);
+    };
+    Versor operator^(const float scalar) const {
+        return ext(scalar);
     };
 
     //--------------------Interior Product--------------------
@@ -135,10 +106,33 @@ public:
     // (a_x * b_x)(e1 . e1) + (a_y * b_y)(e2 . e2) =
     // Since e1 . e1 = 1 and e2 . e2 = 1, we can simplify this to:
     // (a_x * b_x) + (a_y * b_y), just a scalar quantity.
+    // The inner product of itself is the square of the magnitude of the vector. A . A = |A|^2
     Versor operator|(const Versor &v) const {
-        return {x * v.x + y * v.y, 0.0f, 0.0f, 0.0f};
+        return inr(v);
+    };
+    Versor operator|(const float scalar) const {
+        return inr(scalar);
     };
 
+    //--------------------Negate--------------------
+    Versor operator!() const {
+        return negate();
+    }
+
+    //--------------------Reverse--------------------
+    Versor operator~() const {
+        return reverse();
+    }
+
+    //--------------------Left Contraction--------------------
+    Versor operator<<(const Versor &v) const {
+        return (v | *this);
+    }
+
+    //--------------------Right Contraction--------------------
+    Versor operator>>(const Versor &v) const {
+        return (*this | v);
+    }
 
     //--------------------IO-STREAM-FUNCTIONS--------------------
     // Console Outputd
@@ -147,13 +141,34 @@ public:
            << v.a << " + " << v.x << " e1 + " << v.y << " e2 + " << v.b << "(e1^e2)" << std::endl;
         return os;
     };
-
     // Console Input, create a Versor using A X Y Z input.
     friend std::istream &operator>>(std::istream &is, Versor &v) {
         is >> v.a >> v.x >> v.y >> v.b;
         return is;
     };
 //--------------------FUNCTIONS--------------------
+public:
+    Versor normalize() const;
+    Versor sqNorm() const;
+    Versor negate() const;
+    Versor reverse() const;
+    Versor add(const Versor &v) const;
+    Versor add(const float scalar) const;
+    Versor sub(const Versor &v) const;
+    Versor sub(const float scalar) const;
+    Versor mul(const Versor &v) const;
+    Versor mul(const float scalar) const;
+    Versor div(const Versor &v) const;
+    Versor div(const float scalar) const;
+    Versor inr(const Versor &v) const;
+    Versor inr(const float scalar) const;
+    Versor ext(const Versor &v) const;
+    Versor ext(const float scalar) const;
+    Versor lco(const Versor &v) const;
+    Versor lco(const float scalar) const;
+    Versor rco(const Versor &v) const;
+    Versor rco(const float scalar) const;
+
 };
 
 #endif //VERSORSTUDIO_VERSOR_H
