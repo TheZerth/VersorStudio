@@ -2,16 +2,13 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+Welcome to the GitHub of VersorStudio, a sandbox environment built for the analysis of mathematics and physics.
+Specifically aimed at the study of geometric algebra and its applications in physics, this project is a work in progress and will be updated as time goes on.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+Versor Studio is equipped with a GUI allowing you to create and manipulate geometric objects representative of things such as angular momentum or the magnetic field. These objects may then be manipulated to solve for a variety of unknowns.
+A future hope is to implement a basic 3D modeling function for simple shapes to allow for the visualization of Maxwell's equations and their interaction with objects and situations such as a two wire transmission or a plate capacitor.
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+Currently only the foundation of the GA mathematics is in place as well as a basic GUI for the manipulation of 2d orthographic space. The foundation of the GA math system itself is unit-of-measure/space agnostic however for brevity and simplicity the current implementation is in 2d Euclidean space, constructed with orthogonal basis vectors e1 and e2.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -19,7 +16,7 @@ Use the `BLANK_README.md` to get started.
 
 ### Built With
 
-GLFW, ImGui, ImPlot, GLAD
+GLFW, GLAD, ImGui, ImPlot, CMake, VCPKG, C++
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -27,32 +24,29 @@ GLFW, ImGui, ImPlot, GLAD
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To be added
+To use this project, you will need to clone the repository and build the project using CMake. The project is built using CMake and VCPKG, so you will need to have these installed on your system. 
+The project is fully crossplatform and will work on Windows, MacOS, and Linux. Windows users must ise the Visual Studio compiler, MacOS users must use the Clang compiler, and Linux users must use the GCC compiler.
 
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
+### Installation 
 
 To be added
 
-1. Get a free API Key at [https://example.com](https://example.com)
+1. Exmaple
 2. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/TheZerth/VersorStudio.git
    ```
-3. Install NPM packages
+3. Install CMake
    ```sh
-   npm install
+   sudo apt install cmake
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+4. Install vcpkg
+   ```sh
+   git clone https://github.com/microsoft/vcpkg.git
+   cd vcpkg; .\bootstrap-vcpkg.sh
+   ```
+   ```In IDE CMake Settings add the following line to the CMake options:
+    -DCMAKE_TOOLCHAIN_FILE=<path to vcpkg>/vcpkg/scripts/buildsystems/vcpkg.cmake
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -71,8 +65,9 @@ To be added
 <!-- ROADMAP -->
 ## Roadmap
 
-To be added, below is a placeholder.
-
+- [ ] Add basic 2d solution functions, intersection, magnitude, projection, etc. 
+- [ ] Add basic 2d transformation functions, rotation, translation, scaling, mirroring, etc.
+- [ ] Add Google Test for unit testing of the GA math library, ensure axioms are met
 - [ ] Add 2d magnetic field simulator using F_M = Q(v << B), with B field being a bivector instead of the traditional vector
 
 
