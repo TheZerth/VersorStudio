@@ -53,10 +53,26 @@ public:
         return sub(scalar);
     }
 
+    // Versor multiplication is not standard multiplication, it is what is known as a geometric product.
+    // If we start by assuming one can multiply two multivectors together, we can define the geometric product through the following:
+    // ab = (ab + ab) / 2 = (ab + ba + ab - ba) / 2
+    // (ab+ba)/2 + (ab-ba)/2
+    // (ab+ba)/2 is the dot product, and (ab-ba)/2 is the wedge product.
+    // The dot product is the projection of one vector onto another multiplied by the product of their magnitudes.
+    // The wedge product is the oriented area or volume constructed by the components.
+    // The geometric product is the sum of the dot and wedge products.
+    // The geometric product is associative, distributive and the wedge component anti commutative.
+    // e1e2 = e1 ^ e2, the geometric product of two orthogonal basis vectors is the wedge product.
+    // e1e1 = 1
+    // e1(e1e2) = (e1e1)e2 = e2s
     //--------------------Multiplication--------------------
     // Scalar Multiplication
     Versor operator*(const float scalar) const {
         return mul(scalar);
+    }
+    // Vector Multiplication
+    Versor operator*(const std::vector<float> &v) const {
+        return mul(v);
     }
     // Versor Multiplication
     Versor operator*(const Versor &v) const {
@@ -124,14 +140,22 @@ public:
         return reverse();
     }
 
+    // Contraction can be thought of the act of removing one object from another and leaving the result.
+    // It has many elagent uses in physics and mathematics.
+    // Given the two orthogonal basis vectores e1 and e2, contraction can be described by the following:
+    // e1 << e1 = 1, e1 << e2 = 0
+    // e1 << (e1 ^ e2) = e2, e1 << (e2 ^ e1) = -e2
+    // (e1 ^ e2) << (e1 ^ e2) = e1 << (e2 << (e1 ^ e2)) = -1
+    // a << rhs = arhs
+    // lhs << a = 0 if lhs grade > 0
     //--------------------Left Contraction--------------------
     Versor operator<<(const Versor &v) const {
-        return (v | *this);
+        return (v.lco(*this));
     }
 
     //--------------------Right Contraction--------------------
     Versor operator>>(const Versor &v) const {
-        return (*this | v);
+        return (v.rco(*this));
     }
 
     //--------------------IO-STREAM-FUNCTIONS--------------------
@@ -158,6 +182,7 @@ public:
     Versor sub(const float scalar) const;
     Versor mul(const Versor &v) const;
     Versor mul(const float scalar) const;
+    Versor mul(const std::vector<float> &v) const;
     Versor div(const Versor &v) const;
     Versor div(const float scalar) const;
     Versor inr(const Versor &v) const;

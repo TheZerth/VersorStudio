@@ -28,11 +28,10 @@ public:
     bool worldVersorSelected[100];
     std::string* _versorName = &versorName;
 
-
 	virtual void Update() override {
 
 		// Begin GUI
-        ImGui::Begin("Versor Studio", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin("Versor Studio", NULL, ImGuiWindowFlags_NoCollapse);
         ImGui::InputText("Versor Name", _versorName);
         ImGui::InputFloat4("Input Versor", inputVector, "%.3f", 0);
         if (ImGui::Button("Add"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -197,6 +196,14 @@ Versor test3{0.0f, 0.0f, 3.0f, 0.0f};
     float a = 5;
     float b = 3;
     float c = a/b;
+
+	Versor contractionTest1{0.0f, 1.0f, 0.0f, 0.0f};
+	Versor contractionTest2{0.0f, 0.0f, 0.0f, 1.0f};
+	std::cout << "Contraction Test: " << (contractionTest1.lco(contractionTest2)) << std::endl;
+	Versor geoprodTest1(0.0f, 2.0f, 0.0f, 0.0f);
+	Versor geoprodTest2(0.0f, 0.0f, 3.0f, 0.0f);
+	std::cout << "Geometric Product Test: " << (geoprodTest1 * geoprodTest2) << std::endl;
+
     std::cout << std::setprecision(3) << c << std::endl;
     //****************
     //----------------
