@@ -3,6 +3,8 @@
 //
 #include "Versor.h"
 
+
+
 static const std::vector<float> e1 = {1.0f,0.0f};
 static const std::vector<float> e2 = {0.0f,1.0f};
 Versor Versor::negate() const { return {a * -1.0f, x * -1.0f, y * -1.0f, b * -1.0f}; }
@@ -19,11 +21,11 @@ Versor Versor::mul(const Versor &v) const {
     float tempb = (b * v.a) + (a * v.b) + (x * v.y) + (-y * v.x);
     return { tempa, tempx, tempy, tempb };
 }
-Versor Versor::mul(const std::vector<float> &v) const {
-    float tempa = (x * v.x) + (y * v.y);
-    float tempx = (b * v.y) + (a * v.x);
-    float tempy = (a * v.y) + (-b * v.x);
-    float tempb = (x * v.y) + (-y * v.x);
+Versor Versor::mul(const std::vector<float> &v) const {         //0 = x, 1 = y
+    float tempa = (x * v[0]) + (y * v[1]);
+    float tempx = (b * v[1]) + (a * v[0]);
+    float tempy = (a * v[1]) + (-b * v[0]);
+    float tempb = (x * v[1]) + (-y * v[0]);
     return { tempa, tempx, tempy, tempb };
 }
 Versor Versor::mul(const float scalar) const { return {a * scalar, x * scalar, y * scalar, b * scalar}; }
@@ -63,3 +65,32 @@ Versor Versor::rco(const float scalar) const {
     return { a * scalar, 0.0f, 0.0f, 0.0f };
 }
 Versor Versor::sqNorm() const { return (*this | (~*this)); }
+
+std::string Versor::toString() const {
+    std::ostringstream os;
+    if (a != 0.0f) {
+        os << a;
+    }
+    if (x != 0.0f) {
+        if (!os.str().empty()) {
+            os << " + ";
+        }
+        os << x << "e1";
+    }
+    if (y != 0.0f) {
+        if (!os.str().empty()) {
+            os << " + ";
+        }
+        os << y << "e2";
+    }
+    if (b != 0.0f) {
+        if (!os.str().empty()) {
+            os << " + ";
+        }
+        os << b << "e1^e2";
+    }
+    if (os.str().empty()) {
+        os << "0";
+    }
+    return os.str();
+}

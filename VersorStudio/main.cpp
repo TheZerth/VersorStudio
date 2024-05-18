@@ -217,8 +217,6 @@ Versor test3{0.0f, 0.0f, 3.0f, 0.0f};
     //----------------
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
-
-
 		glClear(GL_COLOR_BUFFER_BIT);
 		myimgui.NewFrame();
 		myimgui.Update();

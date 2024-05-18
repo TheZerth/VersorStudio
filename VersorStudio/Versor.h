@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 // This class represents a versor, or what is most commonly known as a multivector.
 // This can be seen as a replacement for vectors and can be used to perform geometric operations.
 // These geometric operations can greatly simplify things that would be difficult to do with classical vectors.
@@ -162,7 +163,7 @@ public:
     // Console Outputd
     friend std::ostream &operator<<(std::ostream &os, const Versor &v) {
         os << "[Versor]: " << std::fixed << std::setprecision(3) << std::setfill('0')
-           << v.a << " + " << v.x << " e1 + " << v.y << " e2 + " << v.b << "(e1^e2)" << std::endl;
+           << v.toString() << std::endl;
         return os;
     };
     // Console Input, create a Versor using A X Y Z input.
@@ -194,6 +195,7 @@ public:
     Versor rco(const Versor &v) const;
     Versor rco(const float scalar) const;
 
+    std::string toString() const;
 };
 
 #endif //VERSORSTUDIO_VERSOR_H
