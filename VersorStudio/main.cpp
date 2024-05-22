@@ -19,7 +19,9 @@ public:
     float inputVector[4] = {0,0,0,0};
     Versor tempVersor{0, 0, 0, 0};
 	Versor selectPlaceholder{0, 0, 0, 0};
+	int selectIndex = 0;
 	std::string namePlaceholder = "Select a Versor";
+	std::string operationName = "Select an Operation";
     float inputVoltage = 0;
     float inputCurrent = 0;
     float inputResistance = 0;
@@ -33,6 +35,8 @@ public:
     std::string* _versorName = &versorName;
 	Versor* _selectedVersor = &selectPlaceholder;
 	std::string* _selectedVersorName = &namePlaceholder;
+	Versor* _operationVersor = &selectPlaceholder;
+	std::string* _operationVersorName = &namePlaceholder;
 
 	CustomImGui() : VersorAgent() {
 		// Set the clear color
@@ -45,7 +49,7 @@ public:
         ImGui::Begin("Versor Studio", NULL, ImGuiWindowFlags_NoCollapse);
         ImGui::InputText("Versor Name", _versorName);
         ImGui::InputFloat4("Input Versor", inputVector, "%.3f", 0);
-        if (ImGui::Button("Add"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+        if (ImGui::Button("Create"))                            // Create a versor when clicked
         {
             tempVersor.a = inputVector[0];                          //Assign users input values to versor to be stored
             tempVersor.x = inputVector[1];
@@ -53,12 +57,32 @@ public:
             tempVersor.b = inputVector[3];
             worldVersors.push_back(tempVersor);                     //Store the versor
             worldVersorNames.push_back(versorName);                 //Store the versors name
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Remove"))                        // Buttons return true when clicked (most widgets return true when edited/activated)
+        }ImGui::SameLine();
+        if (ImGui::Button("Remove") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
         {
-            worldVersors.pop_back();
-        }
+        	worldVersors.erase(worldVersors.begin() + selectIndex);
+        	worldVersorNames.erase(worldVersorNames.begin() + selectIndex);
+        }ImGui::SameLine();
+		if (ImGui::Button("Add") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			operationName = "Addition";
+		}ImGui::SameLine();
+		if (ImGui::Button("Sub") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			operationName = "Subtraction";
+		}ImGui::SameLine();
+		if (ImGui::Button("Mul") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			operationName = "Geometric Product";
+		}ImGui::SameLine();
+		if (ImGui::Button("Ext") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			operationName = "Exterior Product";
+		}ImGui::SameLine();
+		if (ImGui::Button("Int") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			operationName = "Interior Product";
+		}
         if (ImPlot::BeginPlot("Plot")) {
 	        ImVec2 origin = ImPlot::PlotToPixels(ImPlotPoint(0,  0));
         	//ImVec2 e1 = ImPlot::PlotToPixels(ImPlotPoint(1, 0));
@@ -81,7 +105,9 @@ public:
         	ImGui::SameLine();
         	ImGui::Text(_selectedVersorName->c_str());		//Display name of selected versor
         	ImGui::Text(_selectedVersor->toString().c_str());		//Display contents of selected versor
-
+        	ImGui::Text("Operation: ");
+        	ImGui::SameLine();
+        	ImGui::Text(operationName.c_str());
         }ImGui::End();
 
         if (ImGui::Begin("World Versors", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
@@ -92,6 +118,7 @@ public:
             	if (ImGui::IsItemClicked()) {
 					_selectedVersor = &worldVersors[i];
             		_selectedVersorName = &worldVersorNames[i];
+            		selectIndex = i;
 				}
             }
         }ImGui::End();
