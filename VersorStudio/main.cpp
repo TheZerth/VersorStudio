@@ -18,6 +18,8 @@ class CustomImGui : public VersorAgent {
 public:
     float inputVector[4] = {0,0,0,0};
     Versor tempVersor{0, 0, 0, 0};
+	Versor selectPlaceholder{0, 0, 0, 0};
+	std::string namePlaceholder = "Select a Versor";
     float inputVoltage = 0;
     float inputCurrent = 0;
     float inputResistance = 0;
@@ -29,6 +31,13 @@ public:
     std::vector<std::string> worldVersorNames;
     bool worldVersorSelected[100];
     std::string* _versorName = &versorName;
+	Versor* _selectedVersor = &selectPlaceholder;
+	std::string* _selectedVersorName = &namePlaceholder;
+
+	CustomImGui() : VersorAgent() {
+		// Set the clear color
+		glClearColor(0.0f, 0.0f, 0.0f, 1.00f);
+	}
 
 	virtual void Update() override {
 
@@ -51,32 +60,39 @@ public:
             worldVersors.pop_back();
         }
         if (ImPlot::BeginPlot("Plot")) {
+	        ImVec2 origin = ImPlot::PlotToPixels(ImPlotPoint(0,  0));
+        	//ImVec2 e1 = ImPlot::PlotToPixels(ImPlotPoint(1, 0));
+        	//ImVec2 e2 = ImPlot::PlotToPixels(ImPlotPoint(0, 1));
+        	ImPlot::PushPlotClipRect();
+        	//ImPlot::GetPlotDrawList()->AddCircleFilled(cntr,20,IM_COL32(255,255,0,255),20);
+        	//ImPlot::GetPlotDrawList()->AddRect(rmin, rmax, IM_COL32(128,0,255,255));
+        	//ImPlot::GetPlotDrawList()->AddLine(origin,e1,IM_COL32(255,0,0,255),2);
 
-            ImVec2 origin = ImPlot::PlotToPixels(ImPlotPoint(0,  0));
-            //ImVec2 e1 = ImPlot::PlotToPixels(ImPlotPoint(1, 0));
-            //ImVec2 e2 = ImPlot::PlotToPixels(ImPlotPoint(0, 1));
-            ImPlot::PushPlotClipRect();
-            //ImPlot::GetPlotDrawList()->AddCircleFilled(cntr,20,IM_COL32(255,255,0,255),20);
-            //ImPlot::GetPlotDrawList()->AddRect(rmin, rmax, IM_COL32(128,0,255,255));
-            //ImPlot::GetPlotDrawList()->AddLine(origin,e1,IM_COL32(255,0,0,255),2);
+        	for (int i = 0; i < worldVersors.size(); i++) {     //Iterate through all the versors in the world and draw them every frame.
+        		ImPlot::GetPlotDrawList()->AddLine(origin,
+												   ImPlot::PlotToPixels(ImPlotPoint(worldVersors[i].x, worldVersors[i].y)),
+												   IM_COL32(255, 0, 0, 255), 2);
+        	}
+        	ImPlot::PopPlotClipRect();
+        	ImPlot::EndPlot();
 
-            for (int i = 0; i < worldVersors.size(); i++) {     //Iterate through all the versors in the world and draw them every frame.
-                ImPlot::GetPlotDrawList()->AddLine(origin,
-                                                   ImPlot::PlotToPixels(ImPlotPoint(worldVersors[i].x, worldVersors[i].y)),
-                                                   IM_COL32(255, 0, 0, 255), 2);
-            }
-            ImPlot::PopPlotClipRect();
-            ImPlot::EndPlot();
+        	ImGui::Separator();
+        	ImGui::Text("Selected: ");
+        	ImGui::SameLine();
+        	ImGui::Text(_selectedVersorName->c_str());		//Display name of selected versor
+        	ImGui::Text(_selectedVersor->toString().c_str());		//Display contents of selected versor
+
         }ImGui::End();
 
         if (ImGui::Begin("World Versors", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
             for (int i = 0; i < worldVersors.size(); i++) {
                 ImGui::Text(worldVersorNames[i].c_str());
-                ImGui::Text("A: %.3f", worldVersors[i].a);
-                ImGui::Text("X: %.3f", worldVersors[i].x);
-                ImGui::Text("Y: %.3f", worldVersors[i].y);
-                ImGui::Text("B: %.3f", worldVersors[i].b);
-                ImGui::Checkbox(worldVersorNames[i].c_str(), &worldVersorSelected[i]);
+                ImGui::Text(worldVersors[i].toString().c_str());
+                ImGui::SmallButton("Select");
+            	if (ImGui::IsItemClicked()) {
+					_selectedVersor = &worldVersors[i];
+            		_selectedVersorName = &worldVersorNames[i];
+				}
             }
         }ImGui::End();
 
