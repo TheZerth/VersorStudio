@@ -66,6 +66,11 @@ Versor Versor::rco(const float scalar) const {
 }
 Versor Versor::sqNorm() const { return (*this | (~*this)); }
 
+Versor Versor::reflect(const Versor &v) const {
+    return (*this * v) * (*this);
+}
+
+
 std::string Versor::toString() const {
     std::ostringstream os;
     if (a != 0.0f) {

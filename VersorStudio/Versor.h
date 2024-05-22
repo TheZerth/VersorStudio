@@ -160,6 +160,24 @@ public:
         return (v.rco(*this));
     }
 
+    //--------------------Reflection--------------------
+    // Reflection is the act of flipping an object over a line or plane.
+    // This can be done by seeing that any vector can be described as the sum of components to the reflected line and its perpendicular pair.
+    // The reflection occurs through flipping the sign of the portion of the vector that is perpendicular to the line.
+    // a = a|| + a_|_ , a is the vector, a|| is the projection of a onto the line of reflection, a_|_ is the projection of a onto the reflected lines normal.
+    // a' = a|| - a_|_ , a' is the reflection of a.
+    // Let n be the line or plane of reflection.
+    // a|| = (a | n)n, a_|_ = a - a||
+    // Therefor, a' = (a | n)n - (a - a_|_) =
+    // (a | n)n - a - (a | n)n =
+    // a - 2(a | n)n, now we can do some math magic to simplify this further. Lets add 1 to a.
+    // ann - 2(a | n)n = (a | n + a ^ n)n - 2(a | n)n, due to associativity of the geometric product.
+    // = (a | n)n + (a ^ n)n - (a | n)n - (a | n)n = (a ^ n)n - (a | n)n
+    // = (a ^ n - a | n)n
+    // = -(n ^ a + n | a)n this thing looks awfully like the geometric product of n and a now? In which case,
+    // = -n * a * n
+    // a' = -nan
+
     //--------------------IO-STREAM-FUNCTIONS--------------------
     // Console Outputd
     friend std::ostream &operator<<(std::ostream &os, const Versor &v) {
@@ -175,6 +193,18 @@ public:
     // Return if two Versors are identical.
     bool operator==(const Versor & versor) const {
         return a == versor.a && x == versor.x && y == versor.y && b == versor.b;
+    }
+    // Return if two Versors are not identical.
+    bool operator!=(const Versor & versor) const {
+        return a != versor.a || x != versor.x || y != versor.y || b != versor.b;
+    }
+    // Assign a Versor to another Versor.
+    Versor &operator=(const Versor &v) {
+        a = v.a;
+        x = v.x;
+        y = v.y;
+        b = v.b;
+        return *this;
     }
 //--------------------FUNCTIONS--------------------
 public:
@@ -199,6 +229,8 @@ public:
     Versor lco(const float scalar) const;
     Versor rco(const Versor &v) const;
     Versor rco(const float scalar) const;
+
+    Versor reflect(const Versor &v) const;
 
     std::string toString() const;
     std::string toLatex() const;
