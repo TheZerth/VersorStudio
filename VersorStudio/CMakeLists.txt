@@ -4,7 +4,8 @@ add_executable (VersorStudio "main.cpp" "VersorAgent.cpp" "VersorAgent.h"
         "Gibbs.cpp"
         "Gibbs.h"
         Versor.cpp
-        Versor.h)
+        Versor.h
+)
 
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(VersorStudio PRIVATE glad::glad)
