@@ -107,7 +107,8 @@ public:
     // If the wedge product is zero, then the two vectors are parallel.
     Versor operator^(const Versor &v) const {
         return ext(v);
-    };
+    }
+
     Versor operator^(const float scalar) const {
         return ext(scalar);
     };
@@ -162,8 +163,8 @@ public:
     //--------------------IO-STREAM-FUNCTIONS--------------------
     // Console Outputd
     friend std::ostream &operator<<(std::ostream &os, const Versor &v) {
-        os << "[Versor]: " << std::fixed << std::setprecision(3) << std::setfill('0')
-           << v.toString() << std::endl;
+        os << std::fixed << std::setprecision(3) << std::setfill('0')
+           << "[" << v.toString() << "]";
         return os;
     };
     // Console Input, create a Versor using A X Y Z input.
@@ -171,6 +172,10 @@ public:
         is >> v.a >> v.x >> v.y >> v.b;
         return is;
     };
+    // Return if two Versors are identical.
+    bool operator==(const Versor & versor) const {
+        return a == versor.a && x == versor.x && y == versor.y && b == versor.b;
+    }
 //--------------------FUNCTIONS--------------------
 public:
     Versor normalize() const;
@@ -196,6 +201,7 @@ public:
     Versor rco(const float scalar) const;
 
     std::string toString() const;
+    std::string toLatex() const;
 };
 
 #endif //VERSORSTUDIO_VERSOR_H

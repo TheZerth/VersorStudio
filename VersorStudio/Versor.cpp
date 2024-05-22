@@ -94,3 +94,5 @@ std::string Versor::toString() const {
     }
     return os.str();
 }
+
+

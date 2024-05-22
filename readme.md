@@ -70,9 +70,6 @@ To be added
 - [ ] Add Google Test for unit testing of the GA math library, ensure axioms are met
 - [ ] Add 2d magnetic field simulator using F_M = Q(v << B), with B field being a bivector instead of the traditional vector
 
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
