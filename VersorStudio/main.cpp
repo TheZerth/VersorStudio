@@ -19,7 +19,9 @@ public:
     float inputVector[4] = {0,0,0,0};
     Versor tempVersor{0, 0, 0, 0};
 	Versor selectPlaceholder{0, 0, 0, 0};
-	int selectIndex = 0;
+	int selectedVersorIndex = 0;
+	int targetVersorIndex = 0;
+	uint8_t operatorIndex = 0;
 	std::string namePlaceholder = "Select a Versor";
 	std::string operationName = "Select an Operation";
     float inputVoltage = 0;
@@ -35,8 +37,11 @@ public:
     std::string* _versorName = &versorName;
 	Versor* _selectedVersor = &selectPlaceholder;
 	std::string* _selectedVersorName = &namePlaceholder;
-	Versor* _operationVersor = &selectPlaceholder;
-	std::string* _operationVersorName = &namePlaceholder;
+	Versor* _targetVersor = &selectPlaceholder;
+	std::string* _targetVersorName = &namePlaceholder;
+	bool _operationSelected = false;
+	Versor resultVersor{0, 0, 0, 0};
+	std::string resultName = "0";
 
 	CustomImGui() : VersorAgent() {
 		// Set the clear color
@@ -58,30 +63,78 @@ public:
             worldVersors.push_back(tempVersor);                     //Store the versor
             worldVersorNames.push_back(versorName);                 //Store the versors name
         }ImGui::SameLine();
-        if (ImGui::Button("Remove") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+        if (ImGui::Button("Remove") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
         {
-        	worldVersors.erase(worldVersors.begin() + selectIndex);
-        	worldVersorNames.erase(worldVersorNames.begin() + selectIndex);
+        	worldVersors.erase(worldVersors.begin() + selectedVersorIndex);
+        	worldVersorNames.erase(worldVersorNames.begin() + selectedVersorIndex);
         }ImGui::SameLine();
-		if (ImGui::Button("Add") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		if (ImGui::Button("Add") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
 		{
 			operationName = "Addition";
+			operatorIndex = 1;
+			_operationSelected = true;
 		}ImGui::SameLine();
-		if (ImGui::Button("Sub") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		if (ImGui::Button("Sub") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
 		{
 			operationName = "Subtraction";
+			operatorIndex = 2;
+			_operationSelected = true;
 		}ImGui::SameLine();
-		if (ImGui::Button("Mul") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		if (ImGui::Button("Mul") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
 		{
 			operationName = "Geometric Product";
+			operatorIndex = 3;
+			_operationSelected = true;
 		}ImGui::SameLine();
-		if (ImGui::Button("Ext") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		if (ImGui::Button("Ext") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
 		{
 			operationName = "Exterior Product";
+			operatorIndex = 4;
+			_operationSelected = true;
 		}ImGui::SameLine();
-		if (ImGui::Button("Int") && selectIndex >= 0 && selectIndex < worldVersors.size())                        // Remove a versor when clicked
+		if (ImGui::Button("Int") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
 		{
 			operationName = "Interior Product";
+			operatorIndex = 5;
+			_operationSelected = true;
+		}ImGui::SameLine();
+		if (ImGui::Button("SUBMIT") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			switch (operatorIndex) {
+				case 1:
+					resultVersor = _selectedVersor->add(*_targetVersor);
+					resultName = "(" + *_versorName + " + " + *_targetVersorName + ")";
+					break;
+				case 2:
+					resultVersor = _selectedVersor->sub(*_targetVersor);
+					resultName = "(" + worldVersorNames[selectedVersorIndex] + " - " + *_targetVersorName->c_str() + ")";
+					break;
+				case 3:
+					resultVersor = _selectedVersor->mul(*_targetVersor);
+					resultName = "(" + worldVersorNames[selectedVersorIndex] + ")(" + *_targetVersorName->c_str() + ")";
+					break;
+				case 4:
+					resultVersor = _selectedVersor->ext(*_targetVersor);
+					resultName = "(" + worldVersorNames[selectedVersorIndex] + " ^ " + *_targetVersorName->c_str() + ")";
+					break;
+				case 5:
+					resultVersor = _selectedVersor->inr(*_targetVersor);
+					resultName = "(" + worldVersorNames[selectedVersorIndex] + " | " + *_targetVersorName->c_str() + ")";
+					break;
+				default:
+					break;
+			}
+		}ImGui::SameLine();
+		if (ImGui::Button("SAVE") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			worldVersors.push_back(resultVersor);                     //Store the versor
+			worldVersorNames.push_back(resultName);                 //Store the versors name
+		}ImGui::SameLine();
+		if (ImGui::Button("CANCEL") && selectedVersorIndex >= 0 && selectedVersorIndex < worldVersors.size())                        // Remove a versor when clicked
+		{
+			operationName = "Select an operation";
+			operatorIndex = 0;
+			_operationSelected = false;
 		}
         if (ImPlot::BeginPlot("Plot")) {
 	        ImVec2 origin = ImPlot::PlotToPixels(ImPlotPoint(0,  0));
@@ -108,6 +161,13 @@ public:
         	ImGui::Text("Operation: ");
         	ImGui::SameLine();
         	ImGui::Text(operationName.c_str());
+        	ImGui::Text("Target: ");
+        	ImGui::SameLine();
+        	ImGui::Text(_targetVersorName->c_str());
+        	ImGui::Text(_targetVersor->toString().c_str());
+        	ImGui::Text("Result: ");
+        	ImGui::SameLine();
+        	ImGui::Text(resultVersor.toString().c_str());
         }ImGui::End();
 
         if (ImGui::Begin("World Versors", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
@@ -115,11 +175,16 @@ public:
                 ImGui::Text(worldVersorNames[i].c_str());
                 ImGui::Text(worldVersors[i].toString().c_str());
                 ImGui::SmallButton("Select");
-            	if (ImGui::IsItemClicked()) {
+            	if (ImGui::IsItemClicked() && !_operationSelected) {
 					_selectedVersor = &worldVersors[i];
             		_selectedVersorName = &worldVersorNames[i];
-            		selectIndex = i;
+            		selectedVersorIndex = i;
 				}
+            	if (ImGui::IsItemClicked() && _operationSelected) {
+            		_targetVersor = &worldVersors[i];
+            		_targetVersorName = &worldVersorNames[i];
+            		targetVersorIndex = i;
+            	}
             }
         }ImGui::End();
 
